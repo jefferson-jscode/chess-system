@@ -43,10 +43,8 @@ public class UI {
 	}
 
 	public static void clearScreen() {
-		try {
-			Runtime.getRuntime().exec("clear");
-		} catch (final Exception e) {
-		}
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
 	}
 
 	public static void printBoard(ChessPiece[][] pieces) {
