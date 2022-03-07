@@ -61,6 +61,14 @@ public class UI {
 		System.out.println(ANSI_YELLOW + "  a b c d e f g h" + ANSI_RESET);
 	}
 
+	public static void printMatch(ChessMatch match, List<ChessPiece> capturedPieces) {
+		printBoard(match.getPieces());
+		System.out.println();
+		System.out.println("Turn: " + match.getTurn());
+		System.out.println("Waiting player: " + match.getCurrentPlayer());
+
+	}
+
 	public static void printBoard(ChessPiece[][] pieces, boolean[][] possibleMoves) {
 		for (int line = 0; line < 8; line++) {
 			System.out.print("\u001B[33m" + (8 - line) + "\u001B[0m");
@@ -73,10 +81,6 @@ public class UI {
 		}
 
 		System.out.println(ANSI_YELLOW + "  a b c d e f g h" + ANSI_RESET);
-	}
-
-	public static void printMatch(ChessMatch match, List<ChessPiece> capturedPieces) {
-
 	}
 
 	private static void printPiece(ChessPiece piece, boolean background) {
