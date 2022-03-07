@@ -25,7 +25,7 @@ public class UI {
 			System.out.println();
 		}
 
-		System.out.println("\u001B[33m  A B C D E F G H\u001B[0m");
+		System.out.println("\u001B[33m  a b c d e f g h\u001B[0m");
 	}
 
 	public static void printMatch(ChessMatch match, List<ChessPiece> capturedPieces) {
