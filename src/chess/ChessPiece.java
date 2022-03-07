@@ -1,28 +1,31 @@
 package chess;
 
+import board.Board;
 import board.Piece;
 import board.Position;
 
-public class ChessPiece extends Piece {
+public abstract class ChessPiece extends Piece {
+
 	private Color color;
 	private int moveCount;
-	
-	public ChessPiece(Position position) {
-		super(position);
+
+	public ChessPiece(Board board, Color color) {
+		super(board);
+		this.color = color;
 	}
-	
+
 	public ChessPosition getChessPosition() {
 		return ChessPosition.fromPosition(position);
 	}
-	
+
 	protected boolean isThereOpponentPiece(Position position) {
 		return false;
 	}
-	
+
 	protected void increaseMoveCount() {
 		moveCount++;
 	}
-	
+
 	protected void decreaseMoveCount() {
 		moveCount--;
 	}
@@ -34,5 +37,5 @@ public class ChessPiece extends Piece {
 	public int getMoveCount() {
 		return moveCount;
 	}
-	
+
 }
