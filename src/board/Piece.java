@@ -15,12 +15,21 @@ public abstract class Piece {
 	public abstract boolean[][] possibleMoves();
 
 	public boolean possibleMove(Position position) {
-		return false;
+		return possibleMoves()[position.getRow()][position.getColumn()];
 	}
 
 	public boolean isThereAnyPossibleMove() {
-		// TODO Check inner arrays
-		return possibleMoves().length > 0;
+		boolean[][] allPossibleMoves = possibleMoves();
+
+		for (int i = 0; i < allPossibleMoves.length; i++) {
+			for (int j = 0; j < allPossibleMoves[i].length; j++) {
+				if (allPossibleMoves[i][j]) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	protected Board getBoard() {

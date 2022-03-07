@@ -63,11 +63,11 @@ public class Board {
 	}
 
 	public boolean positionExists(Position position) {
-		if (position.getRow() < 0 || position.getRow() > rows) {
+		if (position.getRow() < 0 || position.getRow() >= rows) {
 			return false;
 		}
 
-		if (position.getColumn() < 0 || position.getColumn() > columns) {
+		if (position.getColumn() < 0 || position.getColumn() >= columns) {
 			return false;
 		}
 
