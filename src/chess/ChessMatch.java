@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import board.Board;
 import board.Piece;
@@ -13,10 +14,11 @@ public class ChessMatch {
 
 	private int turn;
 	private Color currentPlayer;
+	private boolean check;
 	private boolean checkMate;
 	private ChessPiece enPassantVulnerable;
 	private ChessPiece promoted;
-	private List<Piece> piecesOnTheBaord = new ArrayList<>();
+	private List<Piece> piecesOnTheBoard = new ArrayList<>();
 	private List<ChessPiece> capturedPieces = new ArrayList<>();
 
 	private Board board;
@@ -52,6 +54,14 @@ public class ChessMatch {
 		validateSourcePosition(source);
 		validateSourcePosition(source, target);
 		Piece capturedPiece = makeMove(source, target);
+
+		if (testCheck(currentPlayer)) {
+			undoMove(source, target, capturedPiece);
+			throw new ChessException("You can't put yourself in check.");
+		}
+
+		check = testCheck(opponent(currentPlayer));
+
 		nextTurn();
 		return (ChessPiece) capturedPiece;
 	}
@@ -63,8 +73,20 @@ public class ChessMatch {
 
 		if (capturedPiece != null) {
 			capturedPieces.add(capturedPiece);
+			piecesOnTheBoard.remove(capturedPiece);
 		}
+
 		return capturedPiece;
+	}
+
+	private void undoMove(Position source, Position target, Piece capturedPiece) {
+		Piece lastMovedPiece = board.removePiece(target);
+		board.placePiece(lastMovedPiece, source);
+		if (capturedPiece != null) {
+			board.placePiece(capturedPiece, target);
+			capturedPieces.remove(capturedPiece);
+			piecesOnTheBoard.add(capturedPiece);
+		}
 	}
 
 	private void validateSourcePosition(Position position) {
@@ -104,6 +126,10 @@ public class ChessMatch {
 		return currentPlayer;
 	}
 
+	public boolean getCheck() {
+		return check;
+	}
+
 	public boolean isCheckMate() {
 		return checkMate;
 	}
@@ -112,9 +138,39 @@ public class ChessMatch {
 		return board;
 	}
 
+	public static Color opponent(Color color) {
+		return (color == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+
+	private ChessPiece king(Color color) {
+		List<Piece> list = piecesOnTheBoard.stream().filter(piece -> ((ChessPiece) piece).getColor() == color)
+				.collect(Collectors.toList());
+
+		for (Piece piece : list) {
+			if (piece instanceof King) {
+				return (ChessPiece) piece;
+			}
+		}
+		throw new IllegalStateException("There is no " + color + " king on the board.");
+	}
+
+	private boolean testCheck(Color color) {
+		Position kingPosition = king(color).getChessPosition().toPosition();
+		List<Piece> opponentPieces = piecesOnTheBoard.stream()
+				.filter(piece -> ((ChessPiece) piece).getColor() == opponent(color)).collect(Collectors.toList());
+
+		for (Piece opponentPiece : opponentPieces) {
+			if (opponentPiece.possibleMoves()[kingPosition.getRow()][kingPosition.getColumn()]) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		board.placePiece(piece, new ChessPosition(column, row).toPosition());
-		piecesOnTheBaord.add(piece);
+		piecesOnTheBoard.add(piece);
 	}
 
 	private void initialSetup() {
