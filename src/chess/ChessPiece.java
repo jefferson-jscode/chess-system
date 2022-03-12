@@ -39,4 +39,7 @@ public abstract class ChessPiece extends Piece {
 		return moveCount;
 	}
 
+	@Override
+	public abstract String toString();
+
 }

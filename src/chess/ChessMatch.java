@@ -8,6 +8,7 @@ import board.Board;
 import board.Piece;
 import board.Position;
 import chess.pieces.King;
+import chess.pieces.Pawn;
 import chess.pieces.Rook;
 
 public class ChessMatch {
@@ -19,7 +20,7 @@ public class ChessMatch {
 	private ChessPiece enPassantVulnerable;
 	private ChessPiece promoted;
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();
-	private List<ChessPiece> capturedPieces = new ArrayList<>();
+	private List<Piece> capturedPieces = new ArrayList<>();
 
 	private Board board;
 
@@ -72,21 +73,25 @@ public class ChessMatch {
 	}
 
 	private Piece makeMove(Position source, Position target) {
-		Piece movingPiece = board.removePiece(source);
-		ChessPiece capturedPiece = (ChessPiece) board.removePiece(target);
+		ChessPiece movingPiece = (ChessPiece) board.removePiece(source);
+		movingPiece.increaseMoveCount();
+
+		Piece capturedPiece = board.removePiece(target);
 		board.placePiece(movingPiece, target);
 
 		if (capturedPiece != null) {
-			capturedPieces.add(capturedPiece);
 			piecesOnTheBoard.remove(capturedPiece);
+			capturedPieces.add(capturedPiece);
 		}
 
 		return capturedPiece;
 	}
 
 	private void undoMove(Position source, Position target, Piece capturedPiece) {
-		Piece lastMovedPiece = board.removePiece(target);
+		ChessPiece lastMovedPiece = (ChessPiece) board.removePiece(target);
+		lastMovedPiece.decreaseMoveCount();
 		board.placePiece(lastMovedPiece, source);
+
 		if (capturedPiece != null) {
 			board.placePiece(capturedPiece, target);
 			capturedPieces.remove(capturedPiece);
@@ -226,13 +231,13 @@ public class ChessMatch {
 		placeNewPiece('h', 8, new Rook(board, Color.BLACK));
 
 		for (char i = 'a'; i < 'i'; i++) {
-			placeNewPiece(i, 2, new Rook(board, Color.WHITE));
-			placeNewPiece(i, 7, new Rook(board, Color.BLACK));
+			placeNewPiece(i, 2, new Pawn(board, Color.WHITE));
+			placeNewPiece(i, 7, new Pawn(board, Color.BLACK));
 		}
 
 	}
 
-	public List<ChessPiece> getCapturedPieces() {
+	public List<Piece> getCapturedPieces() {
 		return capturedPieces;
 	}
 
